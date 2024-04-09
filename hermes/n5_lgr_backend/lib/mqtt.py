@@ -77,7 +77,7 @@ retries = 0
 while not client.is_connected():
     retries += 1
 
-    print(f"{datetime.now()}: Connection failed. Retrying...{retries}")
+    print(f"{datetime.now()}: Attempting Connection...{retries}")
     try:
         client.connect(host="16.171.79.146", port=1883, keepalive=60)
     except socket.timeout:
