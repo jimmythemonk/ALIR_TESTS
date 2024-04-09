@@ -1,0 +1,119 @@
+{% comment %} {% extends 'n5_lgr_backend/base.html' %}
+
+{% block title %}Backend{% endblock %}
+
+{% block content %}
+<h1>My feckin content</h1>
+{% endblock %} {% endcomment %}
+
+<!doctype html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script src="https://cdn.tailwindcss.com"></script>       
+
+        <title>Backend | N5 Logger</title>
+    </head>
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black; /* Add borders */
+            padding: 8px;
+            text-align: center;
+            max-width: 200px; /* Maximum width of the cell */
+            overflow-wrap: break-word; /* Allow text to wrap within the cell */
+        }        
+        .more-info {
+            display: none;
+        }
+    </style>
+
+    <body>
+
+        <div class="px-6 py-6">
+
+            
+        <form method="post" id="serials">
+            {% csrf_token %}
+            <label>Serial Device: </label>
+            <select name="serials" class="border rounded p-2 mb-2" id="serials">
+                {% for serial in serials %} 
+                    {% if serial.serial == current_serial %}
+                        <option value="{{ serial }}" selected>{{ serial }}</option>
+                    {% else %}
+                        <option value="{{ serial }}">{{ serial }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>    
+        </form>
+
+            <br>
+
+            <table>
+                <tr class="row">
+                    <th>Logger timestamp</th>
+                    <th>Seq</th>
+                    <th>Msg type</th>                
+                    <th>Flags</th>                
+                    <th>Cell ID</th>                
+                    <th>Temperature</th>                
+                    <th>Trumi State</th>                
+                    <th>Trumi Update<br>Count</th>                
+                    <th>Trumi State<br>Timestamp</th>                
+                </tr>
+                {% for data in message_data %}    
+                    <tr class="row bg-blue-200 hover:bg-pink-500">
+                        <td> {{ data.lgr_msg_ts}} </td>
+                        <td> {{ data.seq_num}} </td>                    
+                        <td> {{ data.msg_type}} </td>                
+                        <td> {{ data.flags}} </td>                
+                        <td> {{ data.cell_id}} </td>                
+                        <td> {{ data.actual_temp}} </td>                
+                        <td> {{ data.trumi_st}} </td>                
+                        <td> {{ data.trumi_st_upd_count}} </td>                
+                        <td> {{ data.trumi_st_upd_ts}} </td>
+                    </tr>                
+                    <tr class="more-info bg-yellow-200">
+                        <td colspan="9">Payload: {{ data.payload }} </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            
+        </div>
+    </body>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rows = document.querySelectorAll('.row');
+
+            rows.forEach(function(row) {
+                row.addEventListener('click', function() {
+                    // Toggle visibility of the next row (which contains more info)
+                    var nextRow = row.nextElementSibling;
+                    if (nextRow && nextRow.classList.contains('more-info')) {
+                        nextRow.style.display = nextRow.style.display === 'none' ? 'table-row' : 'none';
+                    }
+                });
+            });
+        });
+
+        // Get the dropdown menu element
+        var dropdownMenu = document.getElementById('serials');
+
+        // Add event listener to detect changes in the dropdown menu
+        dropdownMenu.addEventListener('change', function () {
+            // Get the form element
+            var form = document.getElementById('serials');
+
+            // Submit the form
+            form.submit();
+        });
+    </script>
+</html>
