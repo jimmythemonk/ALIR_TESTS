@@ -76,13 +76,13 @@ client.on_message = on_message
 retries = 0
 while not client.is_connected():
     retries += 1
-    print(f"{datetime.now()}: Sleeping")
-    time.sleep(900)
+
     print(f"{datetime.now()}: Connection failed. Retrying...{retries}")
     try:
         client.connect(host="16.171.79.146", port=1883, keepalive=60)
     except socket.timeout:
-        print(f"{datetime.now()}: Connection attempt timed out.")
+        print(f"{datetime.now()}: Connection attempt timed out. Will retry in 15min")
+        time.sleep(900)
         continue
     except Exception as e:
         print(f"{datetime.now()}: Error: {e}")
