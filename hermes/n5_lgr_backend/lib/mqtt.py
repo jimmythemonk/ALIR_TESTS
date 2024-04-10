@@ -17,7 +17,6 @@ def on_message(mqtt_client, userdata, msg):
 
     from ..models import TestDevice, TestSerialData
 
-    print(f"New message")
     message = msg.payload.decode()
 
     try:
