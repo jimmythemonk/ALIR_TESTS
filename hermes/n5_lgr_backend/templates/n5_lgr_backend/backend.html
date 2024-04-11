@@ -37,22 +37,20 @@
 
     <body>
 
-        <div class="px-6 py-6">
-
-            
-        <form method="post" id="serials">
-            {% csrf_token %}
-            <label>Serial Device: </label>
-            <select name="serials" class="border rounded p-2 mb-2" id="serials">
-                {% for serial in serials %} 
-                    {% if serial.serial == current_serial %}
-                        <option value="{{ serial }}" selected>{{ serial }}</option>
-                    {% else %}
-                        <option value="{{ serial }}">{{ serial }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>    
-        </form>
+        <div class="px-6 py-6">        
+            <form method="post" id="serials">
+                {% csrf_token %}
+                <label>Serial Device: </label>
+                <select name="serials" class="border rounded p-2 mb-2" id="serials">
+                    {% for serial in serials %} 
+                        {% if serial.serial == current_serial %}
+                            <option value="{{ serial }}" selected>{{ serial }}</option>
+                        {% else %}
+                            <option value="{{ serial }}">{{ serial }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>    
+            </form>
 
             <br>
 
@@ -65,7 +63,7 @@
                     <th>Cell ID</th>                
                     <th>Temperature</th>                
                     <th>Trumi State</th>                
-                    <th>Trumi Update<br>Count</th>                
+                    {% comment %} <th>Trumi Update<br>Count</th>                 {% endcomment %}
                     {% comment %} <th>Trumi State<br>Timestamp</th>                 {% endcomment %}
                 </tr>
                 {% for data in message_data %}    
@@ -81,7 +79,7 @@
                         <td> {{ data.cell_id}} </td>                
                         <td> {{ data.actual_temp}} </td>                
                         <td> {{ data.trumi_st}} </td>                
-                        <td> {{ data.trumi_st_upd_count}} </td>                
+                        {% comment %} <td> {{ data.trumi_st_upd_count}} </td>                 {% endcomment %}
                     </tr>                            
                     <tr class="more-info bg-yellow-200">
                         <td colspan="9" style="text-align: left;">
@@ -95,8 +93,7 @@
                         </td>
                     </tr>               
                 {% endfor %}
-            </table>
-            
+            </table>            
         </div>
     </body>
 
