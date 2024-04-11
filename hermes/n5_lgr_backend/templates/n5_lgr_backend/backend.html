@@ -63,7 +63,7 @@
                     <th>Cell ID</th>                
                     <th>Temperature</th>                
                     <th>Trumi State</th>                
-                    {% comment %} <th>Trumi Update<br>Count</th>                 {% endcomment %}
+                    <th>Trumi Update<br>Count</th>                
                     {% comment %} <th>Trumi State<br>Timestamp</th>                 {% endcomment %}
                 </tr>
                 {% for data in message_data %}    
@@ -79,7 +79,7 @@
                         <td> {{ data.cell_id}} </td>                
                         <td> {{ data.actual_temp}} </td>                
                         <td> {{ data.trumi_st}} </td>                
-                        {% comment %} <td> {{ data.trumi_st_upd_count}} </td>                 {% endcomment %}
+                        <td> {{ data.trumi_st_upd_count}} </td>                
                     </tr>                            
                     <tr class="more-info bg-yellow-200">
                         <td colspan="9" style="text-align: left;">
