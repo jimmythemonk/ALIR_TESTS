@@ -66,11 +66,15 @@
                     <th>Temperature</th>                
                     <th>Trumi State</th>                
                     <th>Trumi Update<br>Count</th>                
-                    <th>Trumi State<br>Timestamp</th>                
+                    {% comment %} <th>Trumi State<br>Timestamp</th>                 {% endcomment %}
                 </tr>
                 {% for data in message_data %}    
-                    <tr class="row bg-blue-200 hover:bg-pink-500">
-                        <td> {{ data.lgr_msg_ts}} </td>
+                    {% if data.is_incremental %}
+                        <tr class="row bg-orange-400 hover:bg-pink-500">
+                    {% else %}
+                        <tr class="row bg-blue-200 hover:bg-pink-500">
+                    {% endif %}    
+                        <td> {{ data.msg_gen_ts}} </td>
                         <td> {{ data.seq_num}} </td>                    
                         <td> {{ data.msg_type}} </td>                
                         <td> {{ data.flags}} </td>                
@@ -78,11 +82,18 @@
                         <td> {{ data.actual_temp}} </td>                
                         <td> {{ data.trumi_st}} </td>                
                         <td> {{ data.trumi_st_upd_count}} </td>                
-                        <td> {{ data.trumi_st_upd_ts}} </td>
-                    </tr>                
+                    </tr>                            
                     <tr class="more-info bg-yellow-200">
-                        <td colspan="9">Payload: {{ data.payload }} </td>
-                    </tr>
+                        <td colspan="9" style="text-align: left;">
+                            Message timestamp: {{ data.msg_gen_ts }}
+                            <br></br>
+                            Cell ID timestamp: {{ data.cell_id_ts }}
+                            <br></br>
+                            Trumi Update timestamp: {{ data.trumi_st_upd_ts }}
+                            <br></br>
+                            Payload: {{ data.payload }}
+                        </td>
+                    </tr>               
                 {% endfor %}
             </table>
             
