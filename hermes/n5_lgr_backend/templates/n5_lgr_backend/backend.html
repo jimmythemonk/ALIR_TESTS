@@ -70,9 +70,9 @@
                 </tr>
                 {% for data in message_data %}    
                     {% if data.is_incremental %}
-                        <tr class="row bg-orange-400 hover:bg-pink-500">
-                    {% else %}
                         <tr class="row bg-blue-200 hover:bg-pink-500">
+                    {% else %}
+                        <tr class="row bg-orange-400 hover:bg-pink-500">
                     {% endif %}    
                         <td> {{ data.msg_gen_ts}} </td>
                         <td> {{ data.seq_num}} </td>                    

@@ -20,12 +20,12 @@ def backend(request):
     # Check for message gaps
     prev_seq_num = None
     for data in message_data:
-        data.is_incremental = prev_seq_num is None or data.seq_num == prev_seq_num + 1
+        data.is_incremental = prev_seq_num is None or prev_seq_num - data.seq_num == 1
         prev_seq_num = data.seq_num
 
     # Most recent message item is always incremental
     if message_data:
-        message_data[0].is_incremental = False
+        message_data[0].is_incremental = True
 
     context = {
         "message_data": message_data,

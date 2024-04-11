@@ -101,6 +101,10 @@ class N5LoggerParse:
                 parsed_msg_dict.update({"payload": boot_msg})
                 break
 
+            if field == "actual_temp":
+                if field_msg == 255:
+                    field_msg = "Not Implemented yet."
+
         # Set keys that have not been populated to default value of null string
         for key in self.header_format:
             if key not in parsed_msg_dict:
@@ -124,7 +128,7 @@ class N5LoggerParse:
             z = int.from_bytes(xyz_bytes[4:6], byteorder="little", signed=True)
 
             # Print XYZ values
-            xyz_data += f"X: {x} Y: {y} Z: {z},\n"
+            xyz_data += f"X: {x} Y: {y} Z: {z}, \n"
             # Remove last comma
             xyz_data = xyz_data[:-1]
 
