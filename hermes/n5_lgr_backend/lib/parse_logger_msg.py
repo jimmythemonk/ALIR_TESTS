@@ -139,6 +139,8 @@ class N5LoggerParse:
             # Remove last comma
             xyz_data = xyz_data[:-1]
 
+        xyz_data += payload
+
         return xyz_data
 
 
