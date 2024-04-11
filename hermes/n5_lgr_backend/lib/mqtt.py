@@ -24,6 +24,11 @@ def on_message(mqtt_client, userdata, msg):
         parsed_msg = n5_lgr.parse_msg(message)
     except RuntimeWarning as run_warn:
         print("Save message as unknown type, set device message as data msg in models")
+        item = TestSerialData(
+            lgr_msg_ts="ERROR: Check payload",
+            payload=f"{run_warn}: {data_msg}",
+        )
+        item.save()
     else:
         lgr_msg_ts = parsed_msg["lgr_msg_ts"]
         device_id = parsed_msg["device_id"]
@@ -63,7 +68,7 @@ def on_message(mqtt_client, userdata, msg):
 
 
 client = mqtt.Client(
-    client_id="Foley101",
+    client_id="MonikaLaptop",
     transport="tcp",
     protocol=mqtt.MQTTv5,
     callback_api_version=mqtt.CallbackAPIVersion.VERSION2,

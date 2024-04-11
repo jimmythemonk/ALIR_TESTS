@@ -51,7 +51,14 @@ class N5LoggerParse:
             timestamp = match.group(1)
             msg_data = match.group(2)
         else:
-            raise RuntimeWarning("Message does not match pattern!")
+            # If not matched, set all key values to blank string, and only set 3 values to parse
+            for key in self.header_format:
+                parsed_msg_dict[key] = ""
+            parsed_msg["device_id"] = "TESTER"
+            parsed_msg["msg_gen_ts"] = datetime.now()
+            parsed_msg["payload"] = message
+
+            return parsed_msg_dict
 
         parsed_msg_dict = {"data_msg": msg_data, "lgr_msg_ts": timestamp}
 
