@@ -54,7 +54,7 @@ class N5LoggerParse:
             # If not matched, set all key values to blank string, and only set 3 values to parse
             for key in self.header_format:
                 parsed_msg_dict[key] = ""
-            parsed_msg["device_id"] = "TESTER"
+            parsed_msg["device_id"] = binascii.unhexlify(message[0:12]).decode("utf-8")
             parsed_msg["msg_gen_ts"] = datetime.now()
             parsed_msg["payload"] = message
 
