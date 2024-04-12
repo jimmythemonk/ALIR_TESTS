@@ -50,6 +50,8 @@ def on_message(mqtt_client, userdata, msg):
 
         if type(seq_num) != int:
             seq_num = 000
+        if type(trumi_st_upd_count) != int:
+            trumi_st_upd_count = 000
 
         item = TestSerialData(
             lgr_msg_ts=lgr_msg_ts,
