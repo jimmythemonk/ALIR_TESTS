@@ -48,6 +48,9 @@ def on_message(mqtt_client, userdata, msg):
         item = TestDevice(serial=device_id)
         item.save()
 
+        if type(seq_num) != int:
+            seq_num = 000
+
         item = TestSerialData(
             lgr_msg_ts=lgr_msg_ts,
             device_serial=TestDevice.objects.get(serial=device_id),
@@ -68,7 +71,7 @@ def on_message(mqtt_client, userdata, msg):
 
 
 client = mqtt.Client(
-    client_id="MonikaLaptop",
+    client_id="MonikaLaptop1",
     transport="tcp",
     protocol=mqtt.MQTTv5,
     callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
@@ -94,4 +97,6 @@ while not client.is_connected():
         print(f"{datetime.now()}: Error: {e}")
         break
 
-print(f"Connected to the mqtt broker @ 16.171.79.146")
+print(
+    f"Connected to the mqtt broker @ 16.171.79.146 with {(client._client_id).decode('utf-8')}"
+)
