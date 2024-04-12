@@ -37,22 +37,20 @@
 
     <body>
 
-        <div class="px-6 py-6">
-
-            
-        <form method="post" id="serials">
-            {% csrf_token %}
-            <label>Serial Device: </label>
-            <select name="serials" class="border rounded p-2 mb-2" id="serials">
-                {% for serial in serials %} 
-                    {% if serial.serial == current_serial %}
-                        <option value="{{ serial }}" selected>{{ serial }}</option>
-                    {% else %}
-                        <option value="{{ serial }}">{{ serial }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>    
-        </form>
+        <div class="px-6 py-6">        
+            <form method="post" id="serials">
+                {% csrf_token %}
+                <label>Serial Device: </label>
+                <select name="serials" class="border rounded p-2 mb-2" id="serials">
+                    {% for serial in serials %} 
+                        {% if serial.serial == current_serial %}
+                            <option value="{{ serial }}" selected>{{ serial }}</option>
+                        {% else %}
+                            <option value="{{ serial }}">{{ serial }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>    
+            </form>
 
             <br>
 
@@ -95,8 +93,7 @@
                         </td>
                     </tr>               
                 {% endfor %}
-            </table>
-            
+            </table>            
         </div>
     </body>
 
