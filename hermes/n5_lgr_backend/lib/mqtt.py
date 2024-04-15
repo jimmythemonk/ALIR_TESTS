@@ -73,7 +73,7 @@ def on_message(mqtt_client, userdata, msg):
 
 
 client = mqtt.Client(
-    client_id="MonikaLaptop1",
+    client_id="James_aws",
     transport="tcp",
     protocol=mqtt.MQTTv5,
     callback_api_version=mqtt.CallbackAPIVersion.VERSION2,

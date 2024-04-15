@@ -7,7 +7,23 @@ def backend(request):
 
     if request.method == "POST":
         current_serial = request.POST.get("serials")
-        if current_serial:
+        refresh_records = request.POST.get("refreshRecords")
+        delete_records = request.POST.get("deleteRecords")
+
+        if delete_records:
+            try:
+                record = TestDevice.objects.get(serial=current_serial)
+            except TestDevice.DoesNotExist:
+                print("Device does not exist")
+            else:
+                record.delete()
+
+            current_serial = serials.first()
+            message_data = TestSerialData.objects.filter(
+                device_serial__serial=current_serial
+            )
+
+        if current_serial or refresh_records:
             message_data = TestSerialData.objects.filter(
                 device_serial__serial=current_serial
             )
