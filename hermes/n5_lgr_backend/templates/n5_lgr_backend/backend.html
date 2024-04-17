@@ -48,6 +48,7 @@
                 <button name="refreshRecords" value="Refresh" onclick="submitButton()" class="border rounded p-2 mb-2 bg-blue-400 text-white">Refresh</button>
 
             </form>
+
             
             {% if page_obj.has_other_pages %}
                 <div class="pagination">
@@ -62,7 +63,7 @@
                         </span>
 
                         {% if page_obj.has_next %}
-                            <a href="?page={{ page_obj.next_page_number }}">>></a>
+                            <a href="?page={{ page_obj.next_page_number }}">next</a>
                             <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
                         {% endif %}
                     </span>

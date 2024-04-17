@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from django.views.decorators.cache import cache_page
 from .models import TestDevice, TestSerialData
 
 
+@cache_page(60 * 15)
 def backend(request):
     serials = TestDevice.objects.all()
 
