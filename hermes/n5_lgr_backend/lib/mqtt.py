@@ -17,6 +17,9 @@ def on_message(mqtt_client, userdata, msg):
 
     from ..models import TestDevice, TestSerialData
 
+    print(f"Message In")
+    start_time = time.time()
+
     message = msg.payload.decode()
 
     try:
@@ -70,6 +73,11 @@ def on_message(mqtt_client, userdata, msg):
             payload=payload,
         )
         item.save()
+
+    total_time = time.time() - start_time
+    print(
+        f"Message parsed ({device_id}-{seq_num}) and saved to database: {total_time} seconds"
+    )
 
 
 client = mqtt.Client(
