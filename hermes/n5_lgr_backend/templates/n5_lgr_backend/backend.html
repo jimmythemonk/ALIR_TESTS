@@ -48,6 +48,26 @@
                 <button name="refreshRecords" value="Refresh" onclick="submitButton()" class="border rounded p-2 mb-2 bg-blue-400 text-white">Refresh</button>
 
             </form>
+            
+            {% if page_obj.has_other_pages %}
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1">&laquo; first</a>
+                            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                        {% endif %}
+
+                        <span class="current">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                        </span>
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}">>></a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            {% endif %}
 
             <br>
 
@@ -63,7 +83,7 @@
                     <th>Trumi Update<br>Count</th>                
                     {% comment %} <th>Trumi State<br>Timestamp</th>                 {% endcomment %}
                 </tr>
-                {% for data in message_data %}    
+                {% for data in page_obj  %}    
                     {% if data.is_incremental %}
                         <tr class="row bg-blue-200 hover:bg-pink-500">
                     {% else %}

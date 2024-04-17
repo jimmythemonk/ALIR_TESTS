@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.core.paginator import Paginator
 from .models import TestDevice, TestSerialData
 
 
@@ -43,10 +44,19 @@ def backend(request):
     if message_data:
         message_data[0].is_incremental = True
 
+    # Define how many records per page you want to display
+    records_per_page = 50
+
+    paginator = Paginator(message_data, records_per_page)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     context = {
         "message_data": message_data,
         "serials": serials,
         "current_serial": current_serial,
+        "page_obj": page_obj,
     }
 
     return render(request, "n5_lgr_backend/backend.html", context)
