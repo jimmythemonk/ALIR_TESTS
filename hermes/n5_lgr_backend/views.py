@@ -30,6 +30,21 @@ def backend(request):
             message_data = TestSerialData.objects.filter(
                 device_serial__serial=current_serial
             )
+    elif request.method == "GET":
+        page_number = request.GET.get("page")
+        if page_number:
+            current_serial = request.GET.get("serial")
+            if current_serial:
+                message_data = TestSerialData.objects.filter(
+                    device_serial__serial=current_serial
+                )
+        else:
+            # Default behavior if no page number is provided
+            print("No page number specified")
+            current_serial = serials.first()
+            message_data = TestSerialData.objects.filter(
+                device_serial=current_serial
+            ).order_by("-create_at")
     else:
         current_serial = serials.first()
         message_data = TestSerialData.objects.filter(
@@ -48,7 +63,6 @@ def backend(request):
 
     # Define how many records per page you want to display
     records_per_page = 50
-
     paginator = Paginator(message_data, records_per_page)
 
     page_number = request.GET.get("page")
