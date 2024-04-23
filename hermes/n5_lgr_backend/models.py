@@ -27,7 +27,7 @@ class TestSerialData(models.Model):
     trumi_st = models.CharField(max_length=200)
     trumi_st_upd_count = models.IntegerField()
     trumi_st_upd_ts = models.CharField(max_length=200)
-    payload = models.CharField(max_length=2000)
+    payload = models.CharField(max_length=8000)
     create_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -149,8 +149,7 @@ class N5LoggerParse:
             # Print XYZ values
             xyz_data += f"X: {x} Y: {y} Z: {z}, "
 
-        # Remove last comma
-        xyz_data = xyz_data[:-1] + payload + incorrect_payload
+        xyz_data = xyz_data + payload + incorrect_payload
 
         return xyz_data
 
