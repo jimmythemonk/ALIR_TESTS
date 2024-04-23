@@ -127,8 +127,8 @@ class N5LoggerParse:
     def parse_payload(self, payload, decompress_payload):
 
         xyz_data = ""
-
         incorrect_payload = ""
+
         if decompress_payload:
             decompressed_payload = self._decompress_payload(payload)
             binary_data = decompressed_payload["decomp_payload"]
@@ -137,7 +137,9 @@ class N5LoggerParse:
             binary_data = binascii.unhexlify(payload)
 
         # Iterate over binary data in chunks of 6 bytes
+        accel_samples = 0
         for i in range(0, len(binary_data), 6):
+            accel_samples += 1
             # Extract XYZ value from the chunk
             xyz_bytes = binary_data[i : i + 6]
 
@@ -147,9 +149,10 @@ class N5LoggerParse:
             z = int.from_bytes(xyz_bytes[4:6], byteorder="little", signed=True)
 
             # Print XYZ values
-            xyz_data += f"X: {x} Y: {y} Z: {z}, "
+            xyz_data += f"X: {x} Y: {y} Z: {z},\n"
 
-        xyz_data = xyz_data + payload + incorrect_payload
+        # xyz_data = xyz_data + payload + incorrect_payload
+        xyz_data = f"{accel_samples} accelerometer samples\nXYZ:\n{xyz_data}\nRAW:\n{payload}\n{incorrect_payload}"
 
         return xyz_data
 

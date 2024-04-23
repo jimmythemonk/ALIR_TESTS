@@ -107,7 +107,7 @@
                             <br></br>
                             Trumi Update timestamp: {{ data.trumi_st_upd_ts }}
                             <br></br>
-                            Payload:<br>{{ data.payload }}
+                            Payload:<br>{{ data.payload|linebreaksbr|safe }}
                         </td>
                     </tr>               
                 {% endfor %}
