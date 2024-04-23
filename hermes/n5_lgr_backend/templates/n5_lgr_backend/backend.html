@@ -77,11 +77,11 @@
                     <th>Logger timestamp</th>
                     <th>Seq</th>
                     <th>Msg type</th>                
-                    <th>Flags</th>                
+                    {% comment %} <th>Flags</th>                 {% endcomment %}
                     <th>Cell ID</th>                
                     <th>Temperature</th>                
                     <th>Trumi State</th>                
-                    <th>Trumi Update<br>Count</th>                
+                    {% comment %} <th>Trumi Update<br>Count</th>                 {% endcomment %}
                     {% comment %} <th>Trumi State<br>Timestamp</th>                 {% endcomment %}
                 </tr>
                 {% for data in page_obj  %}    
@@ -93,19 +93,19 @@
                         <td> {{ data.lgr_msg_ts}} </td>
                         <td> {{ data.seq_num}} </td>                    
                         <td> {{ data.msg_type}} </td>                
-                        <td> {{ data.flags}} </td>                
+                        {% comment %} <td> {{ data.flags}} </td>                 {% endcomment %}
                         <td> {{ data.cell_id}} </td>                
                         <td> {{ data.actual_temp}} </td>                
                         <td> {{ data.trumi_st}} </td>                
-                        <td> {{ data.trumi_st_upd_count}} </td>                
+                        {% comment %} <td> {{ data.trumi_st_upd_count}} </td>                 {% endcomment %}
                     </tr>                            
                     <tr class="more-info bg-yellow-200">
                         <td colspan="9" style="text-align: left;">
                             Message timestamp: {{ data.msg_gen_ts }}
                             <br></br>
-                            Cell ID timestamp: {{ data.cell_id_ts }}
-                            <br></br>
-                            Trumi Update timestamp: {{ data.trumi_st_upd_ts }}
+                            Last Cell ID switch timestamp: {{ data.cell_id_ts }}
+                            {% comment %} <br></br>
+                            Last Trumi Update timestamp: {{ data.trumi_st_upd_ts }} {% endcomment %}
                             <br></br>
                             Payload:<br>{{ data.payload|linebreaksbr|safe }}
                         </td>
