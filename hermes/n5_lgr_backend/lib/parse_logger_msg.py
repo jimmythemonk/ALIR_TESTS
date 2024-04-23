@@ -152,7 +152,10 @@ class N5LoggerParse:
             xyz_data += f"X: {x} Y: {y} Z: {z},\n"
 
         # xyz_data = xyz_data + payload + incorrect_payload
-        xyz_data = f"{accel_samples} accelerometer samples\nXYZ:\n{xyz_data}\nRAW:\n{payload}\n{incorrect_payload}"
+        # xyz_data = f"{accel_samples} accelerometer samples\nXYZ:\n{xyz_data}\nRAW:\n{payload}\n{incorrect_payload}"
+        xyz_data = (
+            f"{accel_samples} accelerometer samples\n{xyz_data}\n{incorrect_payload}"
+        )
 
         return xyz_data
 
