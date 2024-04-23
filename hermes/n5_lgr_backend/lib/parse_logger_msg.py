@@ -159,7 +159,7 @@ class N5LoggerParse:
         # dll = ctypes.CDLL("./hermes/n5_lgr_backend/lib/rice.dll")
 
         # Real mode
-        dll = ctypes.CDLL("./n5_lgr_backend/lib/rice.dll")
+        dll = ctypes.CDLL("./n5_lgr_backend/lib/rice.so")
         # Define the argument types
         dll.Rice_Uncompress.argtypes = [
             ctypes.c_void_p,  # void* in
