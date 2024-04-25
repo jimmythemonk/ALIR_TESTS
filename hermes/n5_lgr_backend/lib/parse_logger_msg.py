@@ -91,7 +91,8 @@ class N5LoggerParse:
             elif field == "payload":
                 payload = msg_data[data_pos:]
                 # todo: need to parse payload
-                field_msg = self.parse_payload(payload, decompress_payload)
+                # field_msg = self.parse_payload(payload, decompress_payload)
+                field_msg = f"PAYLOAD PARSING IN TESTING!!!"
             else:
                 if "hex" in field_settings_keys:
                     field_msg = field_msg
