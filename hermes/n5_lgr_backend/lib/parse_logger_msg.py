@@ -211,7 +211,7 @@ class N5LoggerParse:
 
                 input_buffer = ctypes.create_string_buffer(fifo_data)
                 # Allocate a buffer for the output
-                # Buffer will always be 192 (32 * 6) in trumi mode
+                # Buffer will always be 192 bytes (32 samples * 6 bytes each) in trumi mode
                 output_buffer = ctypes.create_string_buffer(192)
 
                 # Call the function
