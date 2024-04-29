@@ -29,7 +29,7 @@
 
     <body>
 
-        <div class="px-6 py-6">        
+        <div class="px-6 py-6 flex justify-between">        
             <form method="post" id="serials">
                 {% csrf_token %}
                 <label>Serial Device: </label>
@@ -70,9 +70,10 @@
                     </span>
                 </div>
             {% endif %}
+            
+        </div>
 
-            <br>
-
+        <div class="px-6 py-6">  
             <table>
                 <tr class="row">
                     <th>Logger timestamp</th>
