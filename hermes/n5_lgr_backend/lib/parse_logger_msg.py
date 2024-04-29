@@ -6,6 +6,7 @@ import ctypes
 
 class N5LoggerParse:
     def __init__(self) -> None:
+        self.test_mode = False
         self.pattern = pattern = (
             r"(\w{3}\s+\w{3}\s+\d{1,2} \d{2}:\d{2}:\d{2} \d{4}) : Msg: (.*)"
         )
@@ -158,7 +159,7 @@ class N5LoggerParse:
             z = int.from_bytes(xyz_bytes[4:6], byteorder="little", signed=True)
 
             # Print XYZ values
-            xyz_data += f"X: {x} Y: {y} Z: {z},\n"
+            xyz_data += f"[{accel_samples}] X: {x} Y: {y} Z: {z},\n"
 
         xyz_data = (
             f"{accel_samples} accelerometer samples\n{incorrect_payload}\n{xyz_data}\n"
@@ -169,10 +170,12 @@ class N5LoggerParse:
     def _decompress_payload(self, payload: str) -> bytes:
 
         # Test mode
-        # dll = ctypes.CDLL("./hermes/n5_lgr_backend/lib/rice.dll")
+        if self.test_mode:
+            dll = ctypes.CDLL("./hermes/n5_lgr_backend/lib/rice.dll")
+        else:
+            # Real mode
+            dll = ctypes.CDLL("./n5_lgr_backend/lib/rice.so")
 
-        # Real mode
-        dll = ctypes.CDLL("./n5_lgr_backend/lib/rice.so")
         # Define the argument types
         dll.Rice_Uncompress.argtypes = [
             ctypes.c_void_p,  # void* in
@@ -208,8 +211,8 @@ class N5LoggerParse:
 
                 input_buffer = ctypes.create_string_buffer(fifo_data)
                 # Allocate a buffer for the output
-                # output_buffer = ctypes.create_string_buffer(len(input_buffer) - 2)
-                output_buffer = ctypes.create_string_buffer(len(input_buffer))
+                # Buffer will always be 192 (32 * 6) in trumi mode
+                output_buffer = ctypes.create_string_buffer(192)
 
                 # Call the function
                 dll.Rice_Uncompress(
@@ -240,10 +243,12 @@ if __name__ == "__main__":
     msg_list = [
         # "Thu Apr 25 13:28:33 2024 : Msg: 505050315a570000000000122dbd17000016f15b2dbd123eff0200000000000000000000000000000000000000000000000000000000000000000000c65500018d08110dffc04241bff8084835ff010906ffe04110dffc08201aff8104037ff000806bfdfc2219ff8004433ff0008867fe040f0d7fc081e1bff8083c37ff0008067fe00110c7fc002218ff8004033ff0008867fe00120cffc00241aff7f0806ffdfc1e1cff8004037ff010886bfe02120d7fc00261aff8004835fefe110d7fbf84435ff000806bfe000e0dffc0408c08110d7fc042219ff8104433ff0208867fe02120d7fbf84833fefc110d7fbf84435ff010906bfe02120d7fc04241bff8004439fefe0f0dffbf83c37ff000786ffe00100dffc00221bff8004439fefe120dffbf04837fefa110dffbf04437fefe110d7fc04201bff8103c37ff010806ffe00110dffbf84437fefe110d7fc042019ff8104033ff0207867fe0008d08100d7fbf84035ff000806ffe040f0dffc0c201cff8184439ff0208873fe02100dffc00221bff8004035ff000786bfe00100cffbf84435fefe100d7fbf84035ff000806bfe02100d7fc04201aff8083c35ff010806ffe02100dffc04221bff8004837ff010906bfe04120dffc08221bff8004437ff000806bfe00100d7fc041e1bff8104039ff010806ffe0008d08110dffc04241bff8004835ff000886ffdfc221bff8004439ff010886ffe00110dffc00221bff8004037ff000806ffe00110dffc04221bff8104835ff020906bfe02120d7fc002419ff7f08867fdfc241aff8004837ff010906ffe00120e7fc00241dff8004c3bff0109873fe02120e7fc04201cff8004039fefc100dffbf04437fefe120e7fc00241bff8080"
         # "Thu Apr 25 15:17:09 2024 : Msg: 505050315a5700000000002e2dbd30710016f15b2dbd2e0aff0100000000000000000000000000000000000000000000000000000000000000000000cbfa00ab0500edfff6030f00ecfffc030f00ebfffe030e00ebfffd030f00ebfffa030f00e9fffc030f00e9fffc030f00ebfffc030f00e9fffd030f00eafffd030d00ebfffe031000ebff00041000ecfffd031000ecfffe030f00e9fffd030f00e9fffc031000e8ffff030e00eaffff030f00ebfffe030f00eaff00040c00eafffd030e00ebfffe030e00ebfffd030e00e9fffd030e00ebfffd031100e9fffd030e00edfffb031200ebfffe030e00ebfffe030e00ecfffc030f00ecfffe030e00ebfffd030f00ecff00040e00f2ff0a040f00ebfffe030e00eaff00040f00eafffd031000eafffc030e00ebfffd030f00ecfffc030f00ebfffd030f00eafffd030e00eafffc030e00e9fffd030f00e9fff9031000eafffc031100e9fffe031000eafffd030f00ecfffd031200ebfffc030f00e9fffe030d00eafffd030e00ecfffd030f00eafffd030e00eafffb031200ebfffd030e00e8fffc030f00ebfffd030f00eafffd030f00eafffe030f00e9fffd030d00eafffc031000eaff0104f6ffa3ffad040d00e2ffe005",
-        "Fri Apr 26 11:11:37 2024 : Msg: 505050315a570000000000012dbe47df0015455a2dbe4791ff0200000000000000000000000000000000000000000000000000000000000000000000f51f008a8909048ea7482e8b19401e51ee0e09560b9d02a5b2ea80b9733ae0305dcebc0cd79bb10385eaecb0ed7abb3c3f5e6ed510d7abb5422af75ce08cbe972023afa5c70907e5730241f85cf08e7e1744241f95d20907e973c241fa5cb08e7e5728241f75cf0907d5750241f25d508e7c1750231ed5d208a7ad73c219e95cf086799750211e25d908478176808a0a128b52f704a2d2bd812cb3af584a2ccbdc124b1af884a2bebe4128adaf98492b2be4128ac2f904b2aebe2130aaaf904c2a4be8130a82fb04e29abec13ca52fb04e290bec13ca32fb050284bf01449f2fc852272bf414c9aafd052262bf2148982fc85225cbf6148952ff054248bfc1548f30102991b60385322cc020b04397fc2e1075ff0ba40980608a08140cffbe84c31fefa120c7fbe84433fefa100cffbe04035fef8110cffbe84433fefa110cffbe04833fefa120cffbe84833fef8110dffbe04439fef8110e7fbf04439fefe100d7fbf84431fefe120c7fbf84c33fefc120cffbf04835fefe120d7fbf84835ff0008867fe00120c7fbf84831fefe120c7fbf84833fefe130c7fbf84c31fefe130c7fbf808a08130d7fbe84835fef8110cffbe84433fefc100c7fbf04031fefa110c7fbe04433fefa110cffbe84c33fef6140c7fbd85031fef8140d7fbe85035fefe140d7fbf84c35fefe130cffc002618ff8004c31ff0109867fe00130cffbf84831fefc120c7fbf04c33fefc120cffbf04835fefc120d7fbe84c35fefa130d7fbe84c33fefa120cffbf84833fefe08908130cffbf05033fefe140d7fbf04c35fefa120d7fbe84435fefc110d7fbf04433fefa110cffbe84431fef8110bffbe84831fefc110cffbe84833fefa120cffbe84433fefc110d7fbf04437fefc110dffbe84435fefa110cffbe04831fef8120cffbe04833fefa130d7fbe84835fefa130d7fbe85037fef8150d7fbe05435fefa140dffbe85035fefa8908110d7fbe84435fefa120cffbe84833fefa120cffbf04433fefc120cffbe84c33fefa130c7fbe84c31fefa130cffbe84c35fefa140cffbf04c33fefa130c7fbe84c31fefa130bffbf04831fefc110cffbe84433fefa110cffbe84435fefa100dffbf83c37fefe100d7fbf04435fefa110d7fbe04431fef8110c7fbe84433fefc120cffbf04833fefa"
+        "Mon Apr 29 08:24:12 2024 : Msg: 505050315a5700000000000c2dc215aa0015055b2dc21542ff020000000000000000000000000000000000000000000000000000000000000000000060ec00699c070c39fff0001873ffdfe0c37fff000186fffe00038e7ffc01071cfff800071cfff800061cfff800051cfff800051cfff800061cfff7f8186fffdfe061bfff7f830dfffbfc1c6fffe00038dfffc01061afff8000a33ffeff061afff800071cfff802071cfff804071bfff806081cfff804081cfff802081dfff802081dff8101c77fe04071dfff804081efff804081ffff802091ffff800091fff8009e071435ffeff0a1bfff7f850dfffc00091cfff8001239fff0001c6fffe000146fffe000146fffe0001473ffe0001873ffe000186fffe000186fffe0081c73ffe0001877ffdfe051ffff7f8147bffe0001c7bffe000207bffe000207bffdfe081efff7f81c77ffe0001c77ffe0081873ffe0101473ffe0101473ffe0081873ffe0081c73ffe0082073ffe0002077ffdfe081cfff7f82073ffdfc071cfff7f89b071039fff000206fffe00840dfffc00091bfff7f848e7ffbf81c77ffdfc071cfff7f01c77ffe0001c77ffe01038efffc02071dfff802071dfff802071dfff802081dfff800091bfff800081afff8000819ff8082063fe020719ff8001c67ffdfe0619fff7f0186bffdfa071afff7d838dfffbec1c6bffdfa0e35ffeff071afff8000e35fff004186fffe01030e7ffc03028efffc02030efffc02009b070e3bfff0001873ffdfe0c37ffeff061cfff7f838efffc01081cfff804081dfff804071dfff802071efff800071dfff7f82077ffdfc081dfff7f02073ffdfe071dfff7f81877ffdfe0c3bfff0001873ffe00838e7ffc01081cfff802081cfff800081dfff802081eff8081c77fe02071cfff802061bfff802081afff800091afff7f0246fffdfc091cfff7f82473ffdfe091dfff800091dfff7f89b070a37ffeff061cfff7f030dfffbf8186bffdfe0e37ffeff051bfff8000839fff0041077ffe01820f7ffc04020f7ffc03020f7ffc02018f7ffc01018ffffc00010f7ffbfc047bffdfc043bffefe031cfff7f020efffbf80cefffbf80cefffbf81077ffdfc083bffefe041cfff7f020e7ffc00041bfff8040a37fff014106bffe028146bffe020146fffe018146fffe010186fffe0081c6bffe000099071437ffeff0a1cfff8001439fff0082c73ffe01058dfffc000b1cff8002c3bff0005077fe000a0effbf82877fdfc1439ffeff050dfffbf81237ffefe048dfffbf81237ffefd048d7ffbf01037ffefd038e7ffbf41039ffefd038efffbf82073ffdfe1037ffeff081bfff7f82073ffdfe061cfff7f81477ffe0001077ffe0001077ffe0081077ffe0100c7bffe010107bffe0101477ffe0080"
     ]
+    n5lgr.test_mode = True
     for message in msg_list:
         parsed_msg = n5lgr.parse_msg(message)
 
         for key, value in parsed_msg.items():
-            print(f"{key}: {value}")
+            if key != "data_msg":
+                print(f"{key}: {value}")
