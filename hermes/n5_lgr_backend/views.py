@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
 from .models import TestDevice, TestSerialData
@@ -12,6 +13,7 @@ def backend(request):
         current_serial = request.POST.get("serials")
         refresh_records = request.POST.get("refreshRecords")
         delete_records = request.POST.get("deleteRecords")
+        export_data = request.POST.get("exportData")
 
         if delete_records:
             try:
@@ -26,10 +28,58 @@ def backend(request):
                 device_serial__serial=current_serial
             )
 
-        if current_serial or refresh_records:
+        if current_serial or refresh_records or export_data:
             message_data = TestSerialData.objects.filter(
                 device_serial__serial=current_serial
             )
+
+        if export_data:
+            csv_data = (
+                "seq_num| "
+                "msg_gen_ts| "
+                "msg type| "
+                "cell_id| "
+                "cell_id_ts| "
+                "actual_temp| "
+                "trumi_st| "
+                "trumi_st_upd_count| "
+                "trumi_st_upd_ts| "
+                "trumi_st_trans_count| "
+                "reloc_st_trans_count| "
+                "stored_st_trans_count| "
+                "wifi_aps| "
+                "pld_sz| "
+                "pld_crc| "
+                "header_crc|\n"
+            )
+            for item in message_data:
+                csv_data += (
+                    f"{item.seq_num}| "
+                    f"{item.msg_gen_ts}| "
+                    f"{item.msg_type}| "
+                    f"{item.cell_id}| "
+                    f"{item.cell_id_ts}| "
+                    f"{item.actual_temp}| "
+                    f"{item.trumi_st}| "
+                    f"{item.trumi_st_upd_count}| "
+                    f"{item.trumi_st_upd_ts}| "
+                    f"{item.trumi_st_trans_count}| "
+                    f"{item.reloc_st_trans_count}| "
+                    f"{item.stored_st_trans_count}| "
+                    f"{item.wifi_aps}| "
+                    f"{item.pld_sz}| "
+                    f"{item.pld_crc}| "
+                    f"{item.header_crc}| \n"
+                )
+
+            export_filename = f"{current_serial}_logger_data.csv"
+            # Create a response with the CSV data as a file attachment
+            response = HttpResponse(csv_data, content_type="text/csv")
+            response["Content-Disposition"] = (
+                f'attachment; filename="{export_filename}"'
+            )
+            return response
+
     elif request.method == "GET":
         page_number = request.GET.get("page")
         if page_number:
