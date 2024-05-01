@@ -27,6 +27,14 @@ class TestSerialData(models.Model):
     trumi_st = models.CharField(max_length=200)
     trumi_st_upd_count = models.IntegerField()
     trumi_st_upd_ts = models.CharField(max_length=200)
+    trumi_st_trans_count = models.CharField(max_length=50)
+    reloc_st_trans_count = models.CharField(max_length=50)
+    stored_st_trans_count = models.CharField(max_length=50)
+    wifi_aps = models.CharField(max_length=50)
+    pld_sz = models.CharField(max_length=50)
+    pld_crc = models.CharField(max_length=10)
+    header_crc = models.CharField(max_length=10)
+
     payload = models.CharField(max_length=8000)
     create_at = models.DateTimeField(auto_now_add=True)
 
