@@ -79,12 +79,13 @@
                     <th>Logger timestamp</th>
                     <th>Seq</th>
                     <th>Msg type</th>                
-                    {% comment %} <th>Flags</th>                 {% endcomment %}
                     <th>Cell ID</th>                
-                    <th>Temperature</th>                
+                    <th>Temp</th>                
                     <th>Trumi State</th>                
-                    {% comment %} <th>Trumi Update<br>Count</th>                 {% endcomment %}
-                    {% comment %} <th>Trumi State<br>Timestamp</th>                 {% endcomment %}
+                    <th>Trumi<br>Update<br>Count</th>                
+                    <th>Trumi<br>Count</th>                
+                    <th>Relocation<br>Count</th>                
+                    <th>Stored<br>Count</th>                
                 </tr>
                 {% for data in page_obj  %}    
                     {% if data.is_incremental %}
@@ -95,19 +96,31 @@
                         <td> {{ data.lgr_msg_ts}} </td>
                         <td> {{ data.seq_num}} </td>                    
                         <td> {{ data.msg_type}} </td>                
-                        {% comment %} <td> {{ data.flags}} </td>                 {% endcomment %}
                         <td> {{ data.cell_id}} </td>                
                         <td> {{ data.actual_temp}} </td>                
                         <td> {{ data.trumi_st}} </td>                
-                        {% comment %} <td> {{ data.trumi_st_upd_count}} </td>                 {% endcomment %}
+                        <td> {{ data.trumi_st_upd_count}} </td>                
+                        <td> {{ data.trumi_st_trans_count}} </td>                
+                        <td> {{ data.reloc_st_trans_count}} </td>                
+                        <td> {{ data.stored_st_trans_count}} </td>                
                     </tr>                            
                     <tr class="more-info bg-yellow-200">
-                        <td colspan="9" style="text-align: left;">
+                        <td colspan="10" style="text-align: left;">
                             Message timestamp: {{ data.msg_gen_ts }}
                             <br></br>
                             Last Cell ID switch timestamp: {{ data.cell_id_ts }}
+                            <br></br>
+                            Last Trumi Update timestamp: {{ data.trumi_st_upd_ts }}
                             {% comment %} <br></br>
-                            Last Trumi Update timestamp: {{ data.trumi_st_upd_ts }} {% endcomment %}
+                            Flags: {{ data.flags }} {% endcomment %}
+                            <br></br>
+                            WiFi AP's: {{ data.wifi_aps }}
+                            <br></br>
+                            Payload size: {{ data.pld_sz }}
+                            <br></br>
+                            Payload CRC: {{ data.pld_crc }}
+                            <br></br>
+                            Header CRC: {{ data.header_crc }}
                             <br></br>
                             Payload:<br>{{ data.payload|linebreaksbr|safe }}
                         </td>

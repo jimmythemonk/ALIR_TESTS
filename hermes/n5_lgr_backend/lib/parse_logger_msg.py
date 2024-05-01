@@ -44,7 +44,7 @@ class N5LoggerParse:
             "trumi_st_trans_count": {"size": 2},
             "reloc_st_trans_count": {"size": 2},
             "stored_st_trans_count": {"size": 2},
-            "wifi_aps": {"size": 18},
+            "wifi_aps": {"size": 18, "hex": True},
             "reserved_1": {"size": 2},
             "pld_sz": {"size": 2},
             "pld_crc": {"size": 2, "hex": True},

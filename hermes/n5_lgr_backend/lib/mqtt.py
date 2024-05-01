@@ -32,52 +32,63 @@ def on_message(mqtt_client, userdata, msg):
         )
         item.save()
     else:
-        lgr_msg_ts = parsed_msg["lgr_msg_ts"]
+        # Save device ID if not already in database
         device_id = parsed_msg["device_id"]
-        data_msg = parsed_msg["data_msg"]
-        msg_type = parsed_msg["msg_type"]
-        flags = parsed_msg["flags"]
-        seq_num = parsed_msg["seq_num"]
-        msg_gen_ts = parsed_msg["msg_gen_ts"]
-        cell_id = parsed_msg["cell_id"]
-        cell_id_ts = parsed_msg["cell_id_ts"]
-        actual_temp = parsed_msg["actual_temp"]
-        trumi_st = parsed_msg["trumi_st"]
-        trumi_st_upd_count = parsed_msg["trumi_st_upd_count"]
-        trumi_st_upd_ts = parsed_msg["trumi_st_upd_ts"]
-        payload = parsed_msg["payload"]
-
         item = TestDevice(serial=device_id)
         item.save()
 
+        # Check sequence number is an integer
+        seq_num = parsed_msg["seq_num"]
         if type(seq_num) != int:
             seq_num = 000
+
+        # Check trumi update count is an integer
+        trumi_st_upd_count = parsed_msg["trumi_st_upd_count"]
         if type(trumi_st_upd_count) != int:
             trumi_st_upd_count = 000
 
         item = TestSerialData(
-            lgr_msg_ts=lgr_msg_ts,
+            lgr_msg_ts=parsed_msg["lgr_msg_ts"],
             device_serial=TestDevice.objects.get(serial=device_id),
-            data_msg=data_msg,
-            msg_type=msg_type,
-            flags=flags,
+            data_msg=parsed_msg["data_msg"],
+            msg_type=parsed_msg["msg_type"],
+            flags=parsed_msg["flags"],
             seq_num=seq_num,
-            msg_gen_ts=msg_gen_ts,
-            cell_id=cell_id,
-            cell_id_ts=cell_id_ts,
-            actual_temp=actual_temp,
-            trumi_st=trumi_st,
+            msg_gen_ts=parsed_msg["msg_gen_ts"],
+            cell_id=parsed_msg["cell_id"],
+            cell_id_ts=parsed_msg["cell_id_ts"],
+            actual_temp=parsed_msg["actual_temp"],
+            trumi_st=parsed_msg["trumi_st"],
             trumi_st_upd_count=trumi_st_upd_count,
-            trumi_st_upd_ts=trumi_st_upd_ts,
-            payload=payload,
+            trumi_st_upd_ts=parsed_msg["trumi_st_upd_ts"],
+            trumi_st_trans_count=parsed_msg["trumi_st_trans_count"],
+            reloc_st_trans_count=parsed_msg["reloc_st_trans_count"],
+            stored_st_trans_count=parsed_msg["stored_st_trans_count"],
+            wifi_aps=parsed_msg["wifi_aps"],
+            pld_sz=parsed_msg["pld_sz"],
+            pld_crc=parsed_msg["pld_crc"],
+            header_crc=parsed_msg["header_crc"],
+            payload=parsed_msg["payload"],
         )
         item.save()
 
     total_time = time.time() - start_time
 
+    print(
+        f"Message parsed ({device_id}-{seq_num}) and saved to database: {total_time} seconds"
+    )
+
+    # if device_id == "PPP1ZW":
+    #     print(
+    #         f"Message parsed ({device_id}-{seq_num}) and saved to database: {total_time} seconds"
+    #     )
+    #     for key, value in parsed_msg.items():
+    #         if key not in ["payload"]:
+    #             print(f"{key}: {value}")
+
 
 client = mqtt.Client(
-    client_id="James_aws",
+    client_id="Mary101",
     transport="tcp",
     protocol=mqtt.MQTTv5,
     callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
