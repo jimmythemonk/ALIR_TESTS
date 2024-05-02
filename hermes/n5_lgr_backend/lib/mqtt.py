@@ -69,6 +69,7 @@ def on_message(mqtt_client, userdata, msg):
             pld_crc=parsed_msg["pld_crc"],
             header_crc=parsed_msg["header_crc"],
             payload=parsed_msg["payload"],
+            xyz_raw=parsed_msg["xyz_raw"],
         )
         item.save()
 

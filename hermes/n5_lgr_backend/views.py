@@ -50,7 +50,8 @@ def backend(request):
                 "wifi_aps| "
                 "pld_sz| "
                 "pld_crc| "
-                "header_crc|\n"
+                "header_crc| "
+                "xyz_raw\n"
             )
             for item in message_data:
                 csv_data += (
@@ -69,7 +70,8 @@ def backend(request):
                     f"{item.wifi_aps}| "
                     f"{item.pld_sz}| "
                     f"{item.pld_crc}| "
-                    f"{item.header_crc}| \n"
+                    f"{item.header_crc}| "
+                    f"{item.xyz_raw}| \n"
                 )
 
             export_filename = f"{current_serial}_logger_data.csv"

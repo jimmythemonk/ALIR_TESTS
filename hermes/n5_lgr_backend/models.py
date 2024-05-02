@@ -36,6 +36,7 @@ class TestSerialData(models.Model):
     header_crc = models.CharField(max_length=10)
 
     payload = models.CharField(max_length=8000)
+    xyz_raw = models.CharField(max_length=8000)
     create_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

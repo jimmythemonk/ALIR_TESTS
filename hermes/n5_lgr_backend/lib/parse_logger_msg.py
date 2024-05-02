@@ -99,9 +99,17 @@ class N5LoggerParse:
                     field_msg = timestamp.strftime("%a, %B %d, %Y %I:%M:%S %p")
                 else:
                     field_msg = "No timestamp"
+            elif field == "actual_temp":
+                if field_msg_int == 255:
+                    field_msg = "n/a"
+                else:
+                    actual_temp = (field_msg_int / 2) - 40
+                    field_msg = f"{actual_temp} C"
             elif field == "payload":
                 payload = msg_data[data_pos:]
-                field_msg = self.parse_payload(payload, decompress_payload)
+                parsed_payload = self.parse_payload(payload, decompress_payload)
+                parsed_msg_dict.update({"xyz_raw": parsed_payload["xyz_data_raw"]})
+                field_msg = parsed_payload["xyz_data"]
             else:
                 if "hex" in field_settings_keys:
                     field_msg = field_msg
@@ -165,7 +173,10 @@ class N5LoggerParse:
             f"{accel_samples} accelerometer samples\n{incorrect_payload}\n{xyz_data}\n"
         )
 
-        return xyz_data
+        xyz_data_raw = binascii.hexlify(binary_data).decode("utf-8")
+        parsed_payload = {"xyz_data": xyz_data, "xyz_data_raw": xyz_data_raw}
+
+        return parsed_payload
 
     def _decompress_payload(self, payload: str) -> bytes:
 
