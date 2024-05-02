@@ -71,7 +71,11 @@ class N5LoggerParse:
 
             return parsed_msg_dict
 
-        parsed_msg_dict = {"data_msg": msg_data, "lgr_msg_ts": timestamp}
+        parsed_msg_dict = {
+            "data_msg": msg_data,
+            "lgr_msg_ts": timestamp,
+            "xyz_raw": "n/a",
+        }
 
         decompress_payload = False
         data_pos = 0
