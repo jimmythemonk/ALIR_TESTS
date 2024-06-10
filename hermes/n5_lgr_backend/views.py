@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
 from .models import TestDevice, TestSerialData
+import re
 
 
 @cache_page(60 * 15)
@@ -54,6 +55,14 @@ def backend(request):
                 "xyz_raw\n"
             )
             for item in message_data:
+                payload_data = item.payload
+                # Check if 'samples' is in payload data and then look for decomrpessed xyz data
+                if "samples" in payload_data:
+                    decomp_payload = payload_data.split("samples")
+                    # Remove preceding [x]...
+                    payload_data = re.sub(r"\[\d+\] ", "", decomp_payload[1])
+                    payload_data = payload_data.replace("\n", "")
+
                 csv_data += (
                     f"{item.seq_num}| "
                     f"{item.msg_gen_ts}| "
@@ -71,7 +80,7 @@ def backend(request):
                     f"{item.pld_sz}| "
                     f"{item.pld_crc}| "
                     f"{item.header_crc}| "
-                    f"{item.xyz_raw}| \n"
+                    f"{payload_data}| \n"
                 )
 
             export_filename = f"{current_serial}_logger_data.csv"
