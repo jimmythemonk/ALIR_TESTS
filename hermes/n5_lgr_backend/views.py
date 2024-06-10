@@ -52,7 +52,7 @@ def backend(request):
                 "pld_sz| "
                 "pld_crc| "
                 "header_crc| "
-                "xyz_raw\n"
+                "xyz_decomp\n"
             )
             for item in message_data:
                 payload_data = item.payload
