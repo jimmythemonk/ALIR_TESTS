@@ -24,7 +24,32 @@ class N5LoggerParse:
                     "CORE_MSG_UPLINK",
                 ],
             },
-            "flags": {"size": 1},
+            "flags": {
+                "size": 1,
+                "bits": [
+                    {
+                        "size": 3,
+                        "name": "Trumi Sample Rate",
+                        "enum": [
+                            "TRUMI_NEXT_EXEC_UNDEFINED",
+                            "TRUMI_NEXT_EXEC_ASAP",
+                            "TRUMI_NEXT_EXEC_IN_500MS",
+                            "TRUMI_NEXT_EXEC_IN_1S",
+                            "TRUMI_NEXT_EXEC_IN_10S",
+                        ],
+                    },
+                    {
+                        "size": 2,
+                        "name": "Trumi Acc Mode",
+                        "enum": [
+                            "TRUMI_ACC_UNDEFINED",
+                            "TRUMI_ACC_SINGLE_SAMPLE",
+                            "TRUMI_ACC_100HZ",
+                            "TRUMI_ACC_1600HZ",
+                        ],
+                    },
+                ],
+            },
             "seq_num": {"size": 4},
             "msg_gen_ts": {"size": 4, "timestamp": True},
             "cell_id": {"size": 4, "hex": True},
@@ -103,6 +128,32 @@ class N5LoggerParse:
                     field_msg = timestamp.strftime("%a, %B %d, %Y %I:%M:%S %p")
                 else:
                     field_msg = "No timestamp"
+
+            elif "bits" in field_settings_keys:
+                # For "bits", three keys are mandatory -> size, name, enum.
+                # Get binary string of value, then reverse so it can be iterated through
+                field_bits_rev = format(field_msg_int, "08b")[::-1]
+
+                bit_start = 0
+                flag_msg = ""
+                for bit_info in field_settings["bits"]:
+                    end_bits = bit_start + bit_info["size"]
+                    bit_value = int(field_bits_rev[bit_start:end_bits][::-1], 2)
+                    bit_start = end_bits
+                    try:
+                        flag_msg += (
+                            f'{bit_info["name"]}: {bit_info["enum"][bit_value]}\n'
+                        )
+                    except IndexError:
+                        flag_msg += (
+                            f"Error with bit value: {bit_value} in {bit_info['name']}\n"
+                        )
+
+                if flag_msg:
+                    field_msg = flag_msg
+                else:
+                    field_msg = f"Error with flags value: {field_msg}"
+
             elif field == "actual_temp":
                 if field_msg_int == 255:
                     field_msg = "n/a"

@@ -49,6 +49,8 @@
                 <button name="exportData" value="Export" onclick="submitButton()" class="border rounded p-2 mb-2 bg-green-400 text-white">Export Data</button>
                 <a href="https://alps-europe-sbd.atlassian.net/wiki/x/FwDo7Q" target="_blank" class="text-blue-400 hover:underline">Confluence - NBIOT Trumi Logger</a>
 
+                <h1>Live Time</h1>
+                <p id="live-time">Loading...</p>
             </form>
 
             
@@ -112,8 +114,8 @@
                             Last Cell ID switch timestamp: {{ data.cell_id_ts }}
                             <br></br>
                             Last Trumi Update timestamp: {{ data.trumi_st_upd_ts }}
-                            {% comment %} <br></br>
-                            Flags: {{ data.flags }} {% endcomment %}
+                            <br></br>
+                            Flags: {{ data.flags }}
                             <br></br>
                             WiFi AP's: {{ data.wifi_aps }}
                             <br></br>
@@ -166,6 +168,31 @@
             var form = document.getElementById('deleteRecords');
             form.submit();
         }
+    </script>
+    
+    <script>
+        function updateTime() {
+            var currentTime = new Date();
+            var hours = currentTime.getHours();
+            var minutes = currentTime.getMinutes();
+            var seconds = currentTime.getSeconds();
+
+            // Add leading zeros if needed
+            minutes = (minutes < 10 ? "0" : "") + minutes;
+            seconds = (seconds < 10 ? "0" : "") + seconds;
+
+            // Format the time
+            var formattedTime = hours + ":" + minutes + ":" + seconds;
+
+            // Update the time displayed on the page
+            document.getElementById('live-time').innerText = formattedTime;
+        }
+
+        // Update the time every second
+        setInterval(updateTime, 1000);
+
+        // Call updateTime initially to avoid initial delay
+        updateTime();
     </script>
     
 </html>
