@@ -115,8 +115,7 @@
                             <br></br>
                             Last Trumi Update timestamp: {{ data.trumi_st_upd_ts }}
                             <br></br>
-                            Flags: {{ data.flags }}
-                            <br></br>
+                            Flags:<br> {{ data.flags|linebreaksbr|safe }}</br>
                             WiFi AP's: {{ data.wifi_aps }}
                             <br></br>
                             Payload size: {{ data.pld_sz }}
