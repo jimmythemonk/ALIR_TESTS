@@ -64,6 +64,8 @@ def backend(request):
                     payload_data = re.sub(r"\[\d+\] ", "", decomp_payload[1])
                     payload_data = payload_data.replace("\n", "")
 
+                flags = item.flags.replace("\n", ",")
+
                 csv_data += (
                     f"{item.seq_num}| "
                     f"{item.msg_gen_ts}| "
@@ -72,7 +74,7 @@ def backend(request):
                     f"{item.cell_id_ts}| "
                     f"{item.actual_temp}| "
                     f"{item.trumi_st}| "
-                    f"{item.flags}| "
+                    f"{flags}| "
                     f"{item.trumi_st_upd_count}| "
                     f"{item.trumi_st_upd_ts}| "
                     f"{item.trumi_st_trans_count}| "
