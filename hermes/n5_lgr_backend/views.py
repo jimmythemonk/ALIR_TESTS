@@ -84,7 +84,7 @@ def backend(request):
                     f"{item.pld_sz}| "
                     f"{item.pld_crc}| "
                     f"{item.header_crc}| "
-                    f"{payload_data}| \n"
+                    f"{payload_data}\n"
                 )
 
             export_filename = f"{current_serial}_logger_data.csv"
