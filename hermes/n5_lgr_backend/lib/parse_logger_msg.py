@@ -225,7 +225,7 @@ class N5LoggerParse:
             ts_delta = timedelta(seconds=field_msg_int)
             epoch_offset = datetime(2000, 1, 1)
             timestamp = epoch_offset + ts_delta
-            accel_sample_timestamp = timestamp.strftime("%a, %B %d, %Y %I:%M:%S %p")
+            accel_sample_timestamp = timestamp.strftime("%a %B %d, %Y %I:%M:%S %p")
             data_p = binary_data[index + 4 : index + timestamp_interval_every]
             index += timestamp_interval_every
 
