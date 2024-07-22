@@ -28,7 +28,7 @@ def on_message(mqtt_client, userdata, msg):
         print("Save message as unknown type, set device message as data msg in models")
         item = TestSerialData(
             lgr_msg_ts="ERROR: Check payload",
-            payload=f"{run_warn}: {data_msg}",
+            payload=f"{run_warn}: {message}",
         )
         item.save()
     else:

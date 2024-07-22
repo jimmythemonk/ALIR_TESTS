@@ -206,9 +206,11 @@ class N5LoggerParse:
             decompressed_payload = self._decompress_payload(payload)
             binary_data = decompressed_payload["decomp_payload"]
             incorrect_payload = decompressed_payload["fifo_error"]
+            # 196 is (32 samples * 6 bytes) + 4 bytes for timestamp
             timestamp_interval_every = 196
         else:
             binary_data = binascii.unhexlify(payload)
+            # 10 is sample of 6 bytes and 4 byte timestamp
             timestamp_interval_every = 10
 
         # Iterate over binary data in chunks of 6 bytes
@@ -226,6 +228,9 @@ class N5LoggerParse:
             accel_sample_timestamp = timestamp.strftime("%a, %B %d, %Y %I:%M:%S %p")
             data_p = binary_data[index + 4 : index + timestamp_interval_every]
             index += timestamp_interval_every
+
+            # If trumi mode (sample size is 196 in trumi mode), set a newline
+            # for each 32 sample lots
             if timestamp_interval_every == 196:
                 xyz_data += f"{accel_sample_timestamp},\n"
 
@@ -239,7 +244,7 @@ class N5LoggerParse:
                 y = int.from_bytes(xyz_bytes[2:4], byteorder="little", signed=True)
                 z = int.from_bytes(xyz_bytes[4:6], byteorder="little", signed=True)
 
-                # Print XYZ values
+                # Print XYZ values, if trumi mode don't add timestamp for each sample
                 if timestamp_interval_every == 196:
                     xyz_data += f"[{accel_samples}] X: {x} Y: {y} Z: {z},\n"
                 else:
@@ -286,7 +291,6 @@ class N5LoggerParse:
             fifo_num += 1
             fifo_length = payload_data[index]
             fifo_timestamp = payload_data[index + 1 : index + 5]
-
             index += 5
             fifo_data_size = index + fifo_length
 
