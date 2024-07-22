@@ -208,7 +208,6 @@ class N5LoggerParse:
             incorrect_payload = decompressed_payload["fifo_error"]
             timestamp_interval_every = 196
         else:
-            timestamp_interval_every = 10
             binary_data = binascii.unhexlify(payload)
             timestamp_interval_every = 10
 
@@ -228,7 +227,7 @@ class N5LoggerParse:
             data_p = binary_data[index + 4 : index + timestamp_interval_every]
             index += timestamp_interval_every
             if timestamp_interval_every == 196:
-                xyz_data += f"{accel_sample_timestamp}\n"
+                xyz_data += f"{accel_sample_timestamp},\n"
 
             for i in range(0, len(data_p), 6):
                 accel_samples += 1
@@ -244,7 +243,7 @@ class N5LoggerParse:
                 if timestamp_interval_every == 196:
                     xyz_data += f"[{accel_samples}] X: {x} Y: {y} Z: {z},\n"
                 else:
-                    xyz_data += f"[{accel_samples}] X: {x} Y: {y} Z: {z}, {accel_sample_timestamp}\n"
+                    xyz_data += f"[{accel_samples}] X: {x} Y: {y} Z: {z}, {accel_sample_timestamp},\n"
 
         xyz_data = (
             f"{accel_samples} accelerometer samples\n"
