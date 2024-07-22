@@ -206,28 +206,50 @@ class N5LoggerParse:
             decompressed_payload = self._decompress_payload(payload)
             binary_data = decompressed_payload["decomp_payload"]
             incorrect_payload = decompressed_payload["fifo_error"]
+            timestamp_interval_every = 196
         else:
+            timestamp_interval_every = 10
             binary_data = binascii.unhexlify(payload)
+            timestamp_interval_every = 10
 
         # Iterate over binary data in chunks of 6 bytes
         accel_samples = 0
-        for i in range(0, len(binary_data), 6):
-            accel_samples += 1
-            # Extract XYZ value from the chunk
-            xyz_bytes = binary_data[i : i + 6]
+        xyz_bytes = []
+        accel_sample_timestamp = ""
 
-            # Interpret XYZ bytes (assuming little-endian encoding)
-            x = int.from_bytes(xyz_bytes[0:2], byteorder="little", signed=True)
-            y = int.from_bytes(xyz_bytes[2:4], byteorder="little", signed=True)
-            z = int.from_bytes(xyz_bytes[4:6], byteorder="little", signed=True)
+        index = 0
+        while index < len(binary_data):
+            fifo_timestamp = binary_data[index : index + 4]
+            field_msg_int = int.from_bytes(fifo_timestamp, byteorder="little")
+            ts_delta = timedelta(seconds=field_msg_int)
+            epoch_offset = datetime(2000, 1, 1)
+            timestamp = epoch_offset + ts_delta
+            accel_sample_timestamp = timestamp.strftime("%a, %B %d, %Y %I:%M:%S %p")
+            data_p = binary_data[index + 4 : index + timestamp_interval_every]
+            index += timestamp_interval_every
+            if timestamp_interval_every == 196:
+                xyz_data += f"{accel_sample_timestamp}\n"
 
-            # Print XYZ values
-            xyz_data += f"[{accel_samples}] X: {x} Y: {y} Z: {z},\n"
+            for i in range(0, len(data_p), 6):
+                accel_samples += 1
+                # Extract XYZ value from the chunk
+                xyz_bytes = data_p[i : i + 6]
+
+                # Interpret XYZ bytes (assuming little-endian encoding)
+                x = int.from_bytes(xyz_bytes[0:2], byteorder="little", signed=True)
+                y = int.from_bytes(xyz_bytes[2:4], byteorder="little", signed=True)
+                z = int.from_bytes(xyz_bytes[4:6], byteorder="little", signed=True)
+
+                # Print XYZ values
+                if timestamp_interval_every == 196:
+                    xyz_data += f"[{accel_samples}] X: {x} Y: {y} Z: {z},\n"
+                else:
+                    xyz_data += f"[{accel_samples}] X: {x} Y: {y} Z: {z}, {accel_sample_timestamp}\n"
 
         xyz_data = (
-            f"{accel_samples} accelerometer samples\n{incorrect_payload}\n{xyz_data}\n"
+            f"{accel_samples} accelerometer samples\n"
+            f"{incorrect_payload}\n{xyz_data}\n"
         )
-
         xyz_data_raw = binascii.hexlify(binary_data).decode("utf-8")
         parsed_payload = {"xyz_data": xyz_data, "xyz_data_raw": xyz_data_raw}
 
@@ -264,7 +286,9 @@ class N5LoggerParse:
         while index < payload_len:
             fifo_num += 1
             fifo_length = payload_data[index]
-            index += 1
+            fifo_timestamp = payload_data[index + 1 : index + 5]
+
+            index += 5
             fifo_data_size = index + fifo_length
 
             if fifo_data_size > payload_len:
@@ -289,7 +313,18 @@ class N5LoggerParse:
                     3,
                 )
 
-                decompressed_payload["decomp_payload"] += output_buffer.raw
+                decompressed_payload["decomp_payload"] += (
+                    fifo_timestamp + output_buffer.raw
+                )
+
+                # field_msg_int = int.from_bytes(fifo_timestamp, byteorder="little")
+                # ts_delta = timedelta(seconds=field_msg_int)
+                # epoch_offset = datetime(2000, 1, 1)
+                # timestamp = epoch_offset + ts_delta
+                # accel_sample_timestamp = timestamp.strftime("%a, %B %d, %Y %I:%M:%S %p")
+                # print(
+                #     f"{accel_sample_timestamp} - {output_buffer.raw.hex()} ({len(output_buffer.raw.hex())})"
+                # )
 
             index += fifo_length
 
