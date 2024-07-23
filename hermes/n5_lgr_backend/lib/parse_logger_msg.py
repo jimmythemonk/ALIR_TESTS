@@ -125,7 +125,7 @@ class N5LoggerParse:
                     ts_delta = timedelta(seconds=field_msg_int)
                     epoch_offset = datetime(2000, 1, 1)
                     timestamp = epoch_offset + ts_delta
-                    field_msg = timestamp.strftime("%a, %B %d, %Y %I:%M:%S %p")
+                    field_msg = timestamp.strftime("%a %B %d, %Y %I:%M:%S %p")
                 else:
                     field_msg = "No timestamp"
 
