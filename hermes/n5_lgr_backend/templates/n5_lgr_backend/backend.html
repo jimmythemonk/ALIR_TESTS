@@ -25,6 +25,36 @@
         .more-info {
             display: none;
         }
+        /* Tooltip container */
+        th.tooltip {
+            position: relative;
+            cursor: pointer;
+        }
+
+        /* Tooltip text */
+        th.tooltip::after {
+            content: attr(data-tooltip); /* Use the data-tooltip attribute to set the tooltip content */
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 100%; /* Position the tooltip above the text */
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Show the tooltip when hovering */
+        th.tooltip:hover::after {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 
     <body>
@@ -85,8 +115,10 @@
                     <th>Cell ID</th>                
                     <th>Temp</th>                
                     <th>Trumi State</th>                
-                    {% comment %} <th>Link<br>Status</th> {% endcomment %}
-                    {% comment %} <th>Link<br>Status</th> {% endcomment %}
+                    <th class="tooltip" 
+                        data-tooltip="For Link status, make sure you are using the firmware aligned with buffer link type."
+                        >Link<br>Status
+                    </th>
                     <th>Trumi<br>Sample<br>Count</th>                
                     <th>Trumi<br>Count</th>                
                     <th>Relocation<br>Count</th>                
@@ -104,7 +136,7 @@
                         <td> {{ data.cell_id}} </td>                
                         <td> {{ data.actual_temp}} </td>                
                         <td> {{ data.trumi_st}} </td>                
-                        {% comment %} <td> {{ data.buffer_link_type}} </td>                 {% endcomment %}
+                        <td> {{ data.buffer_link_type}} </td>                
                         <td> {{ data.trumi_st_upd_count}} </td>                
                         <td> {{ data.trumi_st_trans_count}} </td>                
                         <td> {{ data.reloc_st_trans_count}} </td>                
@@ -124,8 +156,6 @@
                             Payload size: {{ data.pld_sz }}
                             <br></br>
                             Payload CRC: {{ data.pld_crc }}
-                            <br></br>
-                            Buffer Link Type: {{ data.buffer_link_type }}
                             <br></br>
                             Header CRC: {{ data.header_crc }}
                             <br></br>
