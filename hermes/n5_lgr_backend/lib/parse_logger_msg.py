@@ -73,7 +73,13 @@ class N5LoggerParse:
             "reserved_1": {"size": 2},
             "pld_sz": {"size": 2},
             "pld_crc": {"size": 2, "hex": True},
-            "reserved_2": {"size": 1},
+            "buffer_link_type": {
+                "size": 1,
+                "enum": [
+                    "Link Lost",
+                    "Link OK",
+                ],
+            },
             "header_crc": {"size": 1, "hex": True},
             "payload": {"size": 2},  # DEFAULT TO AS THIS WILL CHANGE ANYWAY WHEN FOUND
         }

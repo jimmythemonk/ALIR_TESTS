@@ -33,6 +33,7 @@ class TestSerialData(models.Model):
     wifi_aps = models.CharField(max_length=50)
     pld_sz = models.CharField(max_length=50)
     pld_crc = models.CharField(max_length=10)
+    buffer_link_type = models.CharField(max_length=50)
     header_crc = models.CharField(max_length=10)
 
     payload = models.CharField(max_length=8000)

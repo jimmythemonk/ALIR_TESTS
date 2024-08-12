@@ -85,6 +85,8 @@
                     <th>Cell ID</th>                
                     <th>Temp</th>                
                     <th>Trumi State</th>                
+                    {% comment %} <th>Link<br>Status</th> {% endcomment %}
+                    {% comment %} <th>Link<br>Status</th> {% endcomment %}
                     <th>Trumi<br>Sample<br>Count</th>                
                     <th>Trumi<br>Count</th>                
                     <th>Relocation<br>Count</th>                
@@ -102,13 +104,14 @@
                         <td> {{ data.cell_id}} </td>                
                         <td> {{ data.actual_temp}} </td>                
                         <td> {{ data.trumi_st}} </td>                
+                        {% comment %} <td> {{ data.buffer_link_type}} </td>                 {% endcomment %}
                         <td> {{ data.trumi_st_upd_count}} </td>                
                         <td> {{ data.trumi_st_trans_count}} </td>                
                         <td> {{ data.reloc_st_trans_count}} </td>                
                         <td> {{ data.stored_st_trans_count}} </td>                
                     </tr>                            
                     <tr class="more-info bg-yellow-200">
-                        <td colspan="10" style="text-align: left;">
+                        <td colspan="11" style="text-align: left;">
                             Message timestamp: {{ data.msg_gen_ts }}
                             <br></br>
                             Last Cell ID switch timestamp: {{ data.cell_id_ts }}
@@ -121,6 +124,8 @@
                             Payload size: {{ data.pld_sz }}
                             <br></br>
                             Payload CRC: {{ data.pld_crc }}
+                            <br></br>
+                            Buffer Link Type: {{ data.buffer_link_type }}
                             <br></br>
                             Header CRC: {{ data.header_crc }}
                             <br></br>

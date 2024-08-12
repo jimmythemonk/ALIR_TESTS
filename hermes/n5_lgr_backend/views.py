@@ -6,6 +6,10 @@ from .models import TestDevice, TestSerialData
 import re
 
 
+def maintenance(request):
+    return render(request, "n5_lgr_backend/maintenance.html")
+
+
 @cache_page(60 * 15)
 def backend(request):
     serials = TestDevice.objects.all()
@@ -52,6 +56,7 @@ def backend(request):
                 "wifi_aps| "
                 "pld_sz| "
                 "pld_crc| "
+                "buffer_link_type| "
                 "header_crc| "
                 "xyz_decomp\n"
             )
@@ -83,6 +88,7 @@ def backend(request):
                     f"{item.wifi_aps}| "
                     f"{item.pld_sz}| "
                     f"{item.pld_crc}| "
+                    f"{item.buffer_link_type}| "
                     f"{item.header_crc}| "
                     f"{payload_data}\n"
                 )

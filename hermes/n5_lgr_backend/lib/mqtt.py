@@ -67,6 +67,7 @@ def on_message(mqtt_client, userdata, msg):
             wifi_aps=parsed_msg["wifi_aps"],
             pld_sz=parsed_msg["pld_sz"],
             pld_crc=parsed_msg["pld_crc"],
+            buffer_link_type=parsed_msg["buffer_link_type"],
             header_crc=parsed_msg["header_crc"],
             payload=parsed_msg["payload"],
             xyz_raw=parsed_msg["xyz_raw"],
