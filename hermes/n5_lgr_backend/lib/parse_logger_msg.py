@@ -108,7 +108,7 @@ class N5LoggerParse:
             "xyz_raw": "n/a",
         }
 
-        decompress_payload = False
+        payload_type = ""
         data_pos = 0
         for field, field_settings in self.header_format.items():
             bytes_to_char_len = field_settings["size"] * 2
@@ -123,8 +123,13 @@ class N5LoggerParse:
                 except (KeyError, IndexError):
                     field_msg = f"Unknown enum value: {field_msg_int}"
 
+                # Check for enum flag states
                 if field == "trumi_st" and field_msg == "TRUMI_STATE_MOTION_DETECTION":
-                    decompress_payload = True
+                    payload_type = "decompress_payload"
+
+                elif field == "buffer_link_type" and field_msg == "Link Lost":
+                    payload_type = "link_lost_mode"
+                    parsed_msg_dict["trumi_st"] = "VARIOUS"
 
             elif "timestamp" in field_settings_keys:
                 if field_msg_int != 0:
@@ -168,7 +173,7 @@ class N5LoggerParse:
                     field_msg = f"{actual_temp} C"
             elif field == "payload":
                 payload = msg_data[data_pos:]
-                parsed_payload = self.parse_payload(payload, decompress_payload)
+                parsed_payload = self._parse_payload(payload, payload_type)
                 parsed_msg_dict.update({"xyz_raw": parsed_payload["xyz_data_raw"]})
                 field_msg = parsed_payload["xyz_data"]
             else:
@@ -203,24 +208,28 @@ class N5LoggerParse:
 
         return parsed_msg_dict
 
-    def parse_payload(self, payload, decompress_payload):
+    def _parse_payload(self, payload, payload_type):
 
         xyz_data = ""
         incorrect_payload = ""
 
-        if decompress_payload:
+        if payload_type == "decompress_payload":
             decompressed_payload = self._decompress_payload(payload)
             binary_data = decompressed_payload["decomp_payload"]
             incorrect_payload = decompressed_payload["fifo_error"]
             # 196 is (32 samples * 6 bytes) + 4 bytes for timestamp
             timestamp_interval_every = 196
+        elif payload_type == "link_lost_mode":
+            binary_data = binascii.unhexlify(payload)
+            # 12 is 4 byte timestamp, trumi state of 2 bytes plus 6 byte data
+            timestamp_interval_every = 12
         else:
             binary_data = binascii.unhexlify(payload)
             # 10 is sample of 6 bytes and 4 byte timestamp
             timestamp_interval_every = 10
 
         # Iterate over binary data in chunks of 6 bytes
-        accel_samples = 0
+        accel_sample_idx = 0
         xyz_bytes = []
         accel_sample_timestamp = ""
 
@@ -232,7 +241,25 @@ class N5LoggerParse:
             epoch_offset = datetime(2000, 1, 1)
             timestamp = epoch_offset + ts_delta
             accel_sample_timestamp = timestamp.strftime("%a %B %d, %Y %I:%M:%S %p")
-            data_p = binary_data[index + 4 : index + timestamp_interval_every]
+
+            if payload_type == "link_lost_mode":
+                # 0-4 -> timestamp
+                # 4-6 -> Trumi state
+                # 6-12 -> XYZ data
+                trumi_st_int = int.from_bytes(
+                    binary_data[index + 4 : index + 6], byteorder="little", signed=True
+                )
+                try:
+                    trumi_st = self.header_format["trumi_st"]["enum"][trumi_st_int]
+                except IndexError:
+                    trumi_st = f"Unknow state -> {trumi_st_int}"
+                data_p = binary_data[index + 6 : index + timestamp_interval_every]
+            else:
+                # 0-4 -> timestamp
+                # 4-10 -> XYZ data
+                trumi_st = ""
+                data_p = binary_data[index + 4 : index + timestamp_interval_every]
+
             index += timestamp_interval_every
 
             # If trumi mode (sample size is 196 in trumi mode), set a newline
@@ -241,7 +268,7 @@ class N5LoggerParse:
                 xyz_data += f"{accel_sample_timestamp},\n"
 
             for i in range(0, len(data_p), 6):
-                accel_samples += 1
+                accel_sample_idx += 1
                 # Extract XYZ value from the chunk
                 xyz_bytes = data_p[i : i + 6]
 
@@ -253,15 +280,15 @@ class N5LoggerParse:
                 # Print XYZ values, if trumi mode don't add timestamp for each
                 # sample
                 if timestamp_interval_every == 196:
-                    xyz_data += f"[{accel_samples}] X: {x} Y: {y} Z: {z},\n"
+                    xyz_data += f"[{accel_sample_idx}] X: {x} Y: {y} Z: {z},\n"
                 else:
                     xyz_data += (
-                        f"[{accel_samples}] X: {x} Y: {y} Z: {z}, "
-                        f"{accel_sample_timestamp},\n"
+                        f"[{accel_sample_idx}] X: {x} Y: {y} Z: {z}, "
+                        f"{accel_sample_timestamp},{trumi_st}\n"
                     )
 
         xyz_data = (
-            f"{accel_samples} accelerometer samples\n"
+            f"{accel_sample_idx} accelerometer samples\n"
             f"{incorrect_payload}\n{xyz_data}\n"
         )
         xyz_data_raw = binascii.hexlify(binary_data).decode("utf-8")
