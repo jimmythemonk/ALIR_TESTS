@@ -76,8 +76,8 @@ class N5LoggerParse:
             "buffer_link_type": {
                 "size": 1,
                 "enum": [
+                    "Link Ok",
                     "Link Lost",
-                    "Link OK",
                 ],
             },
             "header_crc": {"size": 1, "hex": True},
